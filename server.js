@@ -24,12 +24,13 @@ app.set("view engine", "handlebars");
 
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+// mongoose will automatically create the mongo database when records are added
 mongoose.connect(MONGODB_URI);
 
 // ### ROUTES ###
 
-require("./routes/apiRoutes")(app);
-require("./routes/htmlRoutes")(app);
+// require("./routes/apiRoutes")(app);
+// require("./routes/htmlRoutes")(app);
 
 app.listen(PORT, function() {
     console.log(
@@ -39,32 +40,43 @@ app.listen(PORT, function() {
     );
 });
 
-app.get("/", function(res,req){
-      res.render("index"); // << the handlbars view (file name before .handlebars) to render
+app.get("/", function(req, res) {
+    db.Article.find({}).then(function(dbResults) {
+        res.render("index", {
+            msg: "message",
+            data: dbResults
+        });
+    });
+    //   res.render("index"); // << the handlbars view (file name before .handlebars) to render
       // example render view, send object (data)
       // res.render("index", {name: "banana"});
 })
 
-app.get("/scrape", (res, req) => {
+app.get("/scrape", (req, res) => {
     
-    axios.get("https://www.reddit.com/r/mildlyinteresting/").then(function(response) {
+    axios.get("https://towardsdatascience.com/").then(function(response) {
 
         var $ = cheerio.load(response.data);
+        console.log("response.data: ", response.data);
+        
+        $("h3").each(function(i, element) {
+            let result = {};
+            result.title = $(element).find("div:first-child").text();
+            result.summary = $(element).parent().find("div:first-child").find("div:first-child").text();
 
-        $("div[theme]").each(function(i, element) {
+            console.log("result: ", result);
 
-            var title = $(element).find("h3").text();
-            var imgLink = $(element).parent().parent().find("a").attr("href");
-
-            db.scrapedData.insert({"title": title, "link": imgLink}, (err, data) => {
-                if (err) {
-                    console.error(err);
-                } else {
-                    console.log(data);
-                }
-            });
+            // db.Article.create(result).then(dbArticle => {
+            //     console.log("created article in db: ", dbArticle);
+            // })
+            // .catch(err => {
+            //     console.error(err);
+            // });
 
         });
+
+        res.send("Scrape Complete");
+
     });
 
 })

@@ -1,12 +1,12 @@
-const db = require("../modals");
+// const db = require("../modals");
 
-module.exports = function(app) {
+// module.exports = function(app) {
 
-    // do something example
-    app.get("/scrape", function(req,res){
-        db.MyModel.findAll({}).then(function(dbResults){
-            res.jston(dbResults);
-        });
-    });
+//     // do something example
+//     app.get("/scrape", function(req,res){
+//         db.MyModel.findAll({}).then(function(dbResults){
+//             res.jston(dbResults);
+//         });
+//     });
 
-}
+// }

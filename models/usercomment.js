@@ -6,6 +6,8 @@ const UserCommentSchema = new Schema({
     comment: {
         type: String
     }
+}, {
+    timestamps: true
 });
 
 const UserComment = mongoose.model("UserComment", UserCommentSchema);

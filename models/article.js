@@ -10,7 +10,7 @@ const ArticleSchema = new Schema({
     Summary: {
         type: String,
     },
-    URL: {
+    articleURL: {
         type: String
     },
     // associate with user comment
@@ -18,6 +18,8 @@ const ArticleSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "UserComment"
     }
+}, {
+    timestamps: true
 });
 
 const Article = mongoose.model("Article", ArticleSchema);

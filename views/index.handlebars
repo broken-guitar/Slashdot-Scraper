@@ -6,17 +6,17 @@
 
       <div class="col-10 offset-1">
             <div class="jumbotron">
-                <h1 class="display-4">{{msg}}</h1>
-                <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+                <h1 class="display-4">Slashdot Scraper</h1>
+                <p class="lead">Oh boy oh boy here are some sweet pipin' hot tech news articles courteousy of slashdot.org</p>
                 <hr class="my-4">
-                <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-                <a class="btn btn-primary btn-lg" href="/scrape" role="button">Learn more</a>
+                <p>Click the scrape button to get some articles.</p>
+                <a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape</a>
             </div>
         
-        <h2>This is our Home Page!</h2>
+        <h2>Articles: </h2>
     
         
-        <h3>Articles:</h3>
+        <h3></h3>
    
         {{!-- <ul id="example-list" class="list-group"> --}}
           {{#each articleData}}
@@ -24,11 +24,11 @@
             <a href="example/{{this.id}}">{{this.text}}</a>
             <button class="btn btn-danger float-right delete">ｘ</button>
           </li> --}}
-            <div class="card" style="width: 100%;">
+            <div class="card my-2" style="width: 100%;">
                 <div class="card-body">
                     <h5 class="card-title">{{this.headline}}</h5>
                     <p class="card-text">{{this.summary}}</p>
-                    <a href="{{this.URL}}" class="btn btn-primary">Article</a>
+                    <a href="{{this.url}}" class="btn btn-primary">Article</a>
                 </div>
             </div>
           {{/each}}

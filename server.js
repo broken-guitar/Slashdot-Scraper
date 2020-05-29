@@ -37,9 +37,9 @@ mongoose.connect(MONGODB_URI);
 // require("./routes/htmlRoutes")(app);
 
 app.get("/", function(req, res) {
-    db.Article.find({}).then(function(dbResults) {
+    db.Article.find({}).sort({createdAt: -1}).then(function(dbResults) {
         let arr = dbResults.map(o => {
-            return {headline: o.Headline, summary: o.Summary, url: o.URL}
+            return {headline: o.Headline, summary: o.Summary, url: o.articleURL}
         });
         res.render("index", {
             msg: "message",
@@ -62,7 +62,7 @@ app.get("/scrape", function(req, res) {
             let result = {};
             result.Headline = $(element).find("span.story-title").find("a").text();
             result.Summary = $(element).find("div.body").text().replace(/\r?\n?\t?/g, "");
-            result.URL = $(element).find("span.story-title").find("a").attr("href");
+            result.articleURL = $(element).find("span.story-title").find("a").attr("href");
             // console.log("result: ", result);
 
             db.Article.create(result).then(dbArticle => {
@@ -74,7 +74,7 @@ app.get("/scrape", function(req, res) {
 
         });
 
-        res.send("Scrape Complete");
+        res.redirect("/");
 
     })
     .catch(err => {

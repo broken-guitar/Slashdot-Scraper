@@ -1,17 +1,16 @@
 // required modules
-var express = require("express");
-var logger = require("morgan");
-var exphbs = require("express-handlebars");
-var mongoose = require("mongoose");
+const express = require("express");
+const logger = require("morgan");
+const exphbs = require("express-handlebars");
+const mongoose = require("mongoose");
 
-var axios = require("axios");
-var cheerio = require("cheerio");
 
-var db = require("./models");
 
-var PORT = process.env.PORT || 3000;
+const db = require("./models");
 
-var app = express();
+const PORT = process.env.PORT || 3000;
+
+const app = express();
 
 
 // ### MIDDLEWARE ###

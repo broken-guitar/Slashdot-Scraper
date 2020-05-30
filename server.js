@@ -23,7 +23,14 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // setup handlebars
-app.engine("handlebars", exphbs({defaultLayout: "main"}));
+app.engine("handlebars", exphbs({
+    defaultLayout: "main",
+    helpers: {
+        embedDataId: function(test) {
+            console.log("dataId: ", this);
+        }
+    }
+}));
 app.set("view engine", "handlebars");
 
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
@@ -33,55 +40,8 @@ mongoose.connect(MONGODB_URI);
 
 // ### ROUTES ###
 
-// require("./routes/apiRoutes")(app);
+require("./routes/apiRoutes")(app);
 // require("./routes/htmlRoutes")(app);
-
-app.get("/", function(req, res) {
-    db.Article.find({}).sort({createdAt: -1}).then(function(dbResults) {
-        let arr = dbResults.map(o => {
-            return {headline: o.Headline, summary: o.Summary, url: o.articleURL}
-        });
-        res.render("index", {
-            msg: "message",
-            articleData: arr
-        });
-    });
-    //   res.render("index"); // << the handlbars view (file name before .handlebars) to render
-      // example render view, send object (data)
-      // res.render("index", {name: "banana"});
-});
-
-app.get("/scrape", function(req, res) {
-    
-    axios.get("https://slashdot.org/").then(function(response) {
-
-        var $ = cheerio.load(response.data);
-        //console.log("response.data: ", response.data);
-        // console.log("$ ", $);
-        $("article[data-fhtype='story']").each(function(i, element) {
-            let result = {};
-            result.Headline = $(element).find("span.story-title").find("a").text();
-            result.Summary = $(element).find("div.body").text().replace(/\r?\n?\t?/g, "");
-            result.articleURL = $(element).find("span.story-title").find("a").attr("href");
-            // console.log("result: ", result);
-
-            db.Article.create(result).then(dbArticle => {
-                console.log("created article in db: ", dbArticle);
-            })
-            .catch(err => {
-                console.error(err);
-            });
-
-        });
-
-        res.redirect("/");
-
-    })
-    .catch(err => {
-        console.error(err);
-    });
-
-});
 
 app.listen(PORT, function() {
     console.log(

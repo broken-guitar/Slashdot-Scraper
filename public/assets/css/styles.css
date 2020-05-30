@@ -3,7 +3,12 @@
     height: 150px;
 } */
 
-.card-text {
-    overflow-y: scroll;
-    max-height: 150px;
+.card {
+    /* height: 500px; */
 }
+
+.card-text {
+    /* overflow-y: scroll; */
+    /* max-height: 150px; */
+}
+

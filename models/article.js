@@ -12,12 +12,12 @@ const ArticleSchema = new Schema({
     },
     articleURL: {
         type: String
-    },
-    // associate with user comment
-    UserComment: {
-        type: Schema.Types.ObjectId,
-        ref: "UserComment"
     }
+    // // associate with user comment
+    // UserComment: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "UserComment"
+    // }
 }, {
     timestamps: true
 });

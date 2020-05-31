@@ -1,14 +1,10 @@
 
 /* .card {
-    height: 150px;
+    /* height: 500px; 
 } */
 
-.card {
-    /* height: 500px; */
-}
-
 .card-text {
-    /* overflow-y: scroll; */
-    /* max-height: 150px; */
+    overflow-y: scroll; 
+    max-height: 150px;
 }
 

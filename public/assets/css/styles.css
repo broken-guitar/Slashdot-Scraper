@@ -1,4 +1,7 @@
-
+body {
+    min-width: 480px;
+    overflow: none;
+}
 /* .card {
     /* height: 500px; 
 } */
@@ -8,3 +11,42 @@
     max-height: 150px;
 }
 
+.add-comment {
+    opacity: 1;
+    color: white;
+}
+
+button.add-comment:disabed {
+    opacity: .3;
+    color: white;
+}
+
+
+.list-group {
+    list-style: none;
+    padding: 0;
+  }
+    
+  .list-group-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* margin-bottom: 5px; */
+      background-color: #dee2eb;
+  }
+  
+  .text {
+    /* padding: 0.7em; */
+  }
+  
+  .delete-comment {
+    /* padding: 0.3em 0.7em; */
+    text-align: right;
+    min-width: 10%;
+    /* background: #f56468; */
+    /* color: white; */
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+      line-height: 0.5em;
+  }

@@ -7,7 +7,7 @@
       <div class="col-10 offset-1">
             <div class="jumbotron">
                 <h1 class="display-4">Slashdot Scraper</h1>
-                <p class="lead">Oh boy oh boy here are some sweet pipin' hot tech news articles courteousy of slashdot.org</p>
+                <p class="lead">Oh boy here are some sweet pipin' hot tech news articles courteousy of slashdot.org</p>
                 <hr class="my-4">
                 <p>Click the scrape button to get some articles.</p>
                 <a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape</a>
@@ -35,22 +35,9 @@
                     
                     {{!-- expanding comment div --}}
                     <div comment-div-id="{{this.dataId}}" class="collapse mt-3">
-                        <div class="list-group">
-                            <div class="card card-body p-2">
-                                <div class="row">
-                                    <div class="col-10">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-                                    </div>
-                                    <div class="col-2">
-                                        <button type="button" class="close align-middle" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <form class="mt-2 was-validated">
+                        
+                        {{!-- comments input form --}}
+                        <form class="my-2 needs-validation" novalidate>
                             <div class="form-row">
                                 <div class="col-10">
                                     <input data-id={{this.dataId}} type="text" class="form-control comment-input" placeholder="Add comment" required>
@@ -59,10 +46,13 @@
                                     </div>
                                 </div>
                                 <div class="col-2">
-                                    <button data-id="{{this.dataId}}" class="btn w-100 btn-outline-primary float-right add add-comment">=></button>
+                                    <button disabled data-id="{{this.dataId}}" class="btn w-100 btn-success float-right add add-comment">➤</button>
                                 </div>
                             </div>
-                        </form>                   
+                        </form>
+
+                        {{!-- rendered comments go here --}}
+                        <div class="list-group"></div>                                                
                     </div>
                     
                 </div>
@@ -79,6 +69,3 @@
   </div> {{!-- container div --}}
 
 </div> {{!-- home div --}}
-
-
-

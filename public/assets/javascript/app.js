@@ -1,102 +1,112 @@
-let commentGetTimes= [];
+const cmtsWaitTime = 10000; // wait 10 seconds
 
 $("button.show-comments").on("click", function(e) {
     e.preventDefault();
-    
+    // current article id
     let articleId = $(this).attr("data-id");
+    // article's comment container element
     let $commentsDiv = $("div[comment-div-id='" + articleId + "']");
     
-    let lastLoad = $commentsDiv.data("lastLoad");
-    let timeDiff = Date.now() - lastLoad;
-    console.log("last: ", lastLoad, "timeDiff: ", timeDiff);
+    // get time passed since last comment GET request
+    let cmtsLoadTime = $commentsDiv.data("cmtsLoadTime") || false;
+    let timePassed = cmtsLoadTime ? Date.now() - cmtsLoadTime : 0;
     
-    let $commentsListDiv = $commentsDiv.children("div.list-group:first-child");
+    // comment list group element
+    let $commentsListDiv = $commentsDiv.children("div.list-group");
     
     // if comments container is collapsed
     if (!$commentsDiv.hasClass("show")) {
-        let commentCount = $commentsListDiv.children("div > .list-group-item").length;
+        // number of comments rendered
+        let commentCount = $commentsListDiv.children("div > .list-group-item").length || 0;    
         
-        console.log("comment count: ", commentCount);
+        // if there are no comments rendered yet or enough time has passed, 
+        // then GET all of the article's comments and render them to DOM
+        if ((commentCount > 0 && timePassed > cmtsWaitTime) || commentCount === 0) {
         
-        // get comments for article and render if
-        // there are no comments rendered yet,
-        // or enough time has passed (to reduce db calls)
-        if (commentCount > 0) {
-            // there are comments rendered already,  so check if last load time
-            if (timeDiff > 10000) {
-                // enough time has passed, so get all commments and re-render
-                console.log("enough time passed, GET comments again");
-                API.getComments(articleId).then(function(data) {
-                    // clear the comments div
-                    $commentsListDiv.empty(); 
-                    // render each comment
-                    for (e of data) {
-                        let $newComment = $("<div/>").attr({"data-id": e._id, "class":"list-group-item mb-1 bg-light"}).text(e.comment);
-                        $commentsListDiv.append($newComment);
-                        
-                    }
-                    $commentsDiv.data({lastLoad: Date.now()});
-                    $commentsDiv.collapse("show");
-                });
-            } else {
-                console.log("not enough time passed, did not GET comments");
-                $commentsDiv.collapse("show");
-            }
-        } else {
-        // no comments rendered, so find all comments and render
-            console.log("no comments rendered yet, GET comments");
-            API.getComments(articleId).then(function(data) {
+            // console.log("GET comments");
+            
+            API.getComments(articleId).then(function(dbUserComments) {
                 // clear the comments div
-                $commentsListDiv.empty(); 
+                $commentsListDiv.empty();
+
                 // render each comment
-                for (e of data) {
-                    let $newComment = $("<div/>").attr({"data-id": e._id, "class":"list-group-item mb-1 bg-light"}).text(e.comment);
-                    $commentsListDiv.append($newComment)
+                for (cmt of dbUserComments) {
+                    renderComment($commentsListDiv, cmt);
                 }
-                $commentsDiv.data({lastLoad: Date.now()});
-                $commentsDiv.collapse("show");
+                $commentsDiv.data({"cmtsLoadTime": Date.now()}); // update the comment GET timestamp
+                $commentsDiv.collapse("show"); // expand to show comments
             });
+        } else {
+            // not enough time passed, just show the previously rendered comments
+            $commentsDiv.collapse("show");
         }
     } else {
-    // else, collapse comments container
+        // collapse comments container
         $commentsDiv.collapse("hide");
     }
 });
-    
-$("button.add-comment").on("click", function(e) {
-    e.preventDefault();
 
+// VALIDATE input, enable add comment button
+$("input.comment-input").keyup(function () {
     let articleId = $(this).attr("data-id");
-    let $newComment = $("input[data-id='" + articleId + "']");
-
-    console.log("add comment articleId", articleId);
-
-    API.saveComment($newComment.val(), articleId)
-    .then(function(data) {
-        // Log the response
-        console.log(data);
-        // Empty the notes section
-        $newComment.empty();
-    });
-    // $.ajax({
-    //     method: "POST",
-    //     url: "/comments/" + articleId,
-    //     data: {
-    //       // Value taken from comment input
-    //       comment: $newComment.val(),
-    //       articleId: articleId
-    //     }
-    // })
-    // .then(function(data) {
-    //     // Log the response
-    //     console.log(data);
-    //     // Empty the notes section
-    //     $newComment.empty();
-    // });
-    
+    if ($(this).val().trim() === '') {
+        //Check to see if there is any text entered
+        // If there is no text within the input ten disable the button
+        $("button.add-comment[data-id='" + articleId + "']").prop("disabled", true);
+    } else {
+        //If there is text in the input, then enable the button
+        $("button.add-comment[data-id='" + articleId + "']").prop("disabled", false);
+    }
 });
 
+// DELETE comment 
+$("div.list-group").on("click", "div.delete-comment", function(e) {
+    e.preventDefault();
+   
+    let commentId = $(this).data("commentId");
+    let $commentItem = $("div[data-id='" + commentId + "']");
+    
+    API.deleteComment(commentId)
+    .then(function(data) {
+        $commentItem.collapse("hide");
+        $commentItem.animate({height: "0px"});
+        setTimeout(function() {
+            $commentItem.remove();
+        }, 200);
+    });
+});
 
+// ADD comment
+$("button.add-comment").on("click", function(e) {
+    e.preventDefault();
+    let $this = $(this);
+    let articleId = $this.attr("data-id");
+    let $commentsListDiv =  $("div[comment-div-id='" + articleId + "']")
+                            .children("div.list-group");
+    let $commentItem = $("input[data-id='" + articleId + "']");
+
+    API.saveComment($commentItem.val(), articleId)
+    .then(function(data) {
+        $commentItem.val("");
+        renderComment($commentsListDiv, data, "prepend");
+        $this.prop("disabled", true);
+    });
+});
+
+function renderComment($target, doc, order) {
+    let $commentItem = $("<div/>").attr({"data-id": doc._id, "class":"list-group-item mb-1 bg-light border-0"});
+    $commentItem.$text = $("<div/>").attr({"class":"text"}).text(doc.comment);
+    $commentItem.$delete = $("<div/>").attr({"class":"delete-comment"}).data({"commentId":doc._id}).text("✖");
+    $commentItem.append($commentItem.$text);
+    $commentItem.append($commentItem.$delete);
+    if (order=="prepend") {
+        $target.prepend($commentItem)
+    } else {
+        $target.append($commentItem)
+    }
+}   
+
+// API obect to hold api calls as methods
 var API = {
     getComments: function(articleId) {
 
@@ -114,30 +124,12 @@ var API = {
               comment: commentVal,
               articleId: articleId
             }
-        })
+        });
+    },
+    deleteComment: function(commentId) {
+        return $.ajax({
+            method: "DELETE",
+            url: "/comments/" + commentId
+        });
     }
-    // saveExample: function(example) {
-    //   return $.ajax({
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     type: "POST",
-    //     url: "api/examples",
-    //     data: JSON.stringify(example)
-    //   });
-    // },
-    // getExamples: function() {
-    //   return $.ajax({
-    //     url: "api/examples",
-    //     type: "GET"
-    //   });
-    // },
-    // deleteExample: function(id) {
-    //   return $.ajax({
-    //     url: "api/examples/" + id,
-    //     type: "DELETE"
-    //   });
-    // }
   };
-    
-    // $(this).addClass("");

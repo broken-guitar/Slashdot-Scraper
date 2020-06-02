@@ -17,10 +17,13 @@ Customers can use the customer app to view products and make purchases. Managing
 
 * NodeJS
 * JavaScript
+* NPM Axios
+* NPM Cheerio
 * NPM Express
-* HTML
+* NPM express-handlebars
+* NPM mongoose
+* HTML/CS
 * Jquery
-* CSS
 
 ### Author
 David Flores

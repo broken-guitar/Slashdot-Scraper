@@ -6,6 +6,10 @@ Slashdot Scraper is a web app that will *get* articles from slashdot.org, save t
 
 Customers can use the customer app to view products and make purchases. Managing inventory, overhead costs, and viewing sales reports are also possible through stand-alone versions of the Bamazon app.
 
+### Demo
+
+You can checkout the deployed app on Heroku here: https://salty-ravine-54019.herokuapp.com/
+
 ### Project Installation
 
 1. Install Node 
